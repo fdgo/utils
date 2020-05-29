@@ -97,6 +97,25 @@ func GetUuidStr() string {
 //rs := rand6.RandSix{}
 //fmt.Println(rs.Rand6NumString())
 
+//package utils
+//
+//import (
+//"github.com/satori/go.uuid"
+//
+//"encoding/base64"
+//)
+//
+//// UUID 生成UUID，编码为URL安全的字符串。如果发生错误，panic
+//func UUID() string {
+//	uid := uuid.Must(uuid.NewV4())
+//
+//	data, err := uid.MarshalBinary()
+//	if err != nil {
+//		panic(err)
+//	}
+//
+//	return base64.RawURLEncoding.EncodeToString(data)
+//}
 
 
 func StrJoin(tag string, str...string )string  {

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strings"
 	"path/filepath"
+	"github.com/gin-gonic/gin"
 )
 
 func GetCurrentDirectory() string {
@@ -67,4 +68,18 @@ func ReadFileLine(path string)  {
 		fmt.Println(string(buf))
 	}
 
+}
+
+func DownLoadFile(c *gin.Context) {
+	fileName := c.Param("filename")
+	targetPath := filepath.Join("downloads/" + fileName)
+	if !strings.HasPrefix(filepath.Clean(targetPath), "downloads/") {
+		c.String(403, "look like you attacking me")
+		return
+	}
+	c.Header("Content-Description", "File Transfer")
+	c.Header("Content-Transfer-Encoding", "binary")
+	c.Header("Content-Disposition", "attachment;filename="+fileName)
+	c.Header("Content-Type", "application/octet-stream")
+	c.File(targetPath)
 }
