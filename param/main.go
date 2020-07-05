@@ -6,18 +6,16 @@ import (
 	"param/input"
 	"param/validation"
 )
-
 func main() {
 	r := gin.Default()
 	r.POST("/regist", Regist)
 	r.POST("/pay", Pay)
 	r.Run()
 }
-
 func Regist(c *gin.Context) {
 	var in input.User
 	if err := c.ShouldBindJSON(&in); err != nil {
-		c.JSON(http.StatusOK, gin.H{"code": 400, "data": nil, "msg": "🙏请输入正确的参数类型!"})
+		c.JSON(http.StatusOK, gin.H{"code": 400, "data": nil, "msg": "请输入正确的参数类型!"})
 		return
 	}
 	valid := validation.Validation{}
@@ -33,7 +31,7 @@ func Regist(c *gin.Context) {
 func Pay(c *gin.Context) {
 	var in input.Config
 	if err := c.ShouldBindJSON(&in); err != nil {
-		c.JSON(http.StatusOK, gin.H{"code":400, "data": nil, "msg": "🙏请输入正确的参数类型!"})
+		c.JSON(http.StatusOK, gin.H{"code":400, "data": nil, "msg": "请输入正确的参数类型!"})
 		return
 	}
 	valid := validation.Validation{}
