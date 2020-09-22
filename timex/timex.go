@@ -16,7 +16,7 @@ func GetYearMonthDay(strTime string) (int, int, int) {
 	if err != nil {
 		return -1, -1, -1
 	}
-	return int(d.Year()), int(d.Month()), int(d.Day())
+	return d.Year(), int(d.Month()), d.Day()
 }
 func GetYearMonthDayEx(nTime int64) (int, int, int) {
 	d, err := time.Parse("2006-01-02 15:04:05", time.Unix(nTime, 0).Format("2006-01-02 15:04:05"))
@@ -142,7 +142,5 @@ func Getconstellation(birthday int64) (star string) {
 	}
 	return star
 }
-1)
 
-	return fmt.Sprintf("%v", ts), ss
-}
+
