@@ -5,7 +5,7 @@ import (
 	"crypto/cipher"
 	"crypto/des"
 	"encoding/base64"
-	consVal "ds_server/support/utils/constex"
+	consVal "interview/baiy/support/utils/constex"
 )
 
 func PKCS5Padding(srcData []byte, blockSize int) []byte {
@@ -39,18 +39,19 @@ func DesDecrypt(srcData []byte, key []byte) []byte {
 }
 
 func EncryptPasswd(src string) string {
-	ret := DesEncrypt([]byte(src), []byte(consVal.EncryptKey))//8
+	ret := DesEncrypt([]byte(src), []byte(consVal.EncryptKey)) //8
 	return base64.StdEncoding.EncodeToString(ret)
 }
-func EncryptPasswdEx(src string,salt string) string {
+func EncryptPasswdEx(src string, salt string) string {
 	ret := DesEncrypt([]byte(src), []byte(salt))
 	return base64.StdEncoding.EncodeToString(ret)
 }
 func DecryptPasswd(srcIn string) string {
 	ret, _ := base64.StdEncoding.DecodeString(srcIn)
-	src := DesDecrypt(ret, []byte(consVal.EncryptKey))//8
+	src := DesDecrypt(ret, []byte(consVal.EncryptKey)) //8
 	return string(src)
 }
+
 //example:
 //mysqlex := `root:dbjzcloudgame@(117.50.93.89:4040)/jz_cloud_game?charset=utf8&parseTime=true&loc=Asia%2FShanghai`
 //ed := &EncryDecry{}
@@ -58,7 +59,3 @@ func DecryptPasswd(srcIn string) string {
 //fmt.Println(src)
 //ret := ed.DecryptPasswd(src)//解密后
 //fmt.Println(ret)
-
-
-
-

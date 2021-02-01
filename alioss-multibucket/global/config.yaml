@@ -8,11 +8,11 @@ sqlconfig:
     db: go-db
   aliosssrv:
     endpoint: xxxxxx.aliyuncs.com
-    accessKeyID: yyyyyyyyy
-    accessKeySecret: zzzzzzzz
+    interview/accessKeyID: yyyyyyyyy
+    interview/accessKeySecret: zzzzzzzz
     bucketName: ttttttttttt
   qiniuosssrv:
     endpoint: xxxxxx.yyyyyyy.com
-    accessKey: 5555555
+    interview/accessKey: 5555555
     secretKey: 7777777
     bucket: 8888888888

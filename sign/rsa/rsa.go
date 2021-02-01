@@ -34,7 +34,7 @@ RD182StB0EmBVxOKC+Qspb0VQezu0niEcf3oCKp7AYzf8C2hND+s3kdyXyomLZQn
 func GetRsaPriKey() *rsa.PrivateKey {
 	key, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(pri_key))
 	if err != nil {
-		log.Printf("ParseRSAPrivateKeyFromPEM err %v",err)
+		log.Printf("ParseRSAPrivateKeyFromPEM err %v", err)
 	}
 	return key
 }
@@ -42,7 +42,7 @@ func GetRsaPriKey() *rsa.PrivateKey {
 func GetRsaPublicKey() *rsa.PublicKey {
 	key, err := jwt.ParseRSAPublicKeyFromPEM([]byte(pri_key))
 	if err != nil {
-		log.Printf("ParseRSAPrivateKeyFromPEM err %v",err)
+		log.Printf("ParseRSAPrivateKeyFromPEM err %v", err)
 	}
 	return key
 }

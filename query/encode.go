@@ -1,5 +1,5 @@
 // Copyright 2013 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
+// Use of this source code is governed interview/baiy a BSD-style
 // license that can be found in the LICENSE file.
 
 // Package query implements encoding of structs into URL query parameters.
@@ -34,7 +34,7 @@ var timeType = reflect.TypeOf(time.Time{})
 
 var encoderType = reflect.TypeOf(new(Encoder)).Elem()
 
-// Encoder is an interface implemented by any type that wishes to encode
+// Encoder is an interface implemented interview/baiy any type that wishes to encode
 // itself into URL values in a non-standard way.
 type Encoder interface {
 	EncodeValues(key string, v *url.Values) error
@@ -56,10 +56,10 @@ type Encoder interface {
 //
 // The URL parameter name defaults to the struct field name but can be
 // specified in the struct field's tag value.  The "url" key in the struct
-// field's tag value is the key name, followed by an optional comma and
+// field's tag value is the key name, followed interview/baiy an optional comma and
 // options.  For example:
 //
-// 	// Field is ignored by this package.
+// 	// Field is ignored interview/baiy this package.
 // 	Field int `url:"-"`
 //
 // 	// Field appears as URL parameter "myName".
@@ -134,7 +134,7 @@ func Values(v interface{}) (url.Values, []string, error) {
 
 	/*
 		if arrayvalues != nil{
-			param = strings.Join(arrayvalues, "&")
+			param_in = strings.Join(arrayvalues, "&")
 		}
 	*/
 

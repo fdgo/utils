@@ -34,13 +34,13 @@ type Mysqlsrv struct {
 }
 type Aliosssrv struct{
 	Endpoint   string       `yaml:"endpoint"`
-	AccessKeyID   string     `yaml:"accessKeyID"`
-	AccessKeySecret string    `yaml:"accessKeySecret"`
+	interview/accessKeyID   string     `yaml:"interview/accessKeyID"`
+	interview/accessKeySecret string    `yaml:"interview/accessKeySecret"`
 	BucketName  string        `yaml:"bucketName"`
 }
 type Qiniuosssrv struct{
 	Endpoint   string       `yaml:"endpoint"`
-	AccessKey string  `yaml:"accessKey"`
+	interview/accessKey string  `yaml:"interview/accessKey"`
 	SecretKey string   `yaml:"secretKey"`
 	Bucket string      `yaml:"bucket"`
 }

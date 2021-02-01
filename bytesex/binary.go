@@ -101,6 +101,7 @@ func init() {
 	uint8arr[6] = 2
 	uint8arr[7] = 1
 }
+
 //func main() {
 //bs := []byte{1, 2, 3}
 //bs := []byte("hello")

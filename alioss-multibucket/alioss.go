@@ -13,8 +13,8 @@ func HandleError(err error) {
 	os.Exit(-1)
 }
 
-func CreateNewBucket( endPoint,accessKeyID,accessKeySecret,bucketName string)(*oss.Bucket, error){
-	client, err := oss.New(endPoint, accessKeyID, accessKeySecret)
+func CreateNewBucket( endPoint,interview/accessKeyID,interview/accessKeySecret,bucketName string)(*oss.Bucket, error){
+	client, err := oss.New(endPoint, interview/accessKeyID, interview/accessKeySecret)
 	if err != nil {
 		return nil, err
 	}
@@ -29,8 +29,8 @@ func CreateNewBucket( endPoint,accessKeyID,accessKeySecret,bucketName string)(*o
 
 	return bucket, nil
 }
-func GetExistBucket(endPoint,accessKeyID,accessKeySecret,bucketName string)(*oss.Bucket, error)  {
-	client, err := oss.New(endPoint, accessKeyID, accessKeySecret)
+func GetExistBucket(endPoint,interview/accessKeyID,interview/accessKeySecret,bucketName string)(*oss.Bucket, error)  {
+	client, err := oss.New(endPoint, interview/accessKeyID, interview/accessKeySecret)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func GetExistBucket(endPoint,accessKeyID,accessKeySecret,bucketName string)(*oss
 	return bucket, nil
 }
 func PutObjectFromFileWithUrl(bucketName,objectKey,filePath string)bool  {
-	bucket, err := GetExistBucket(global.GloConfig.Sqlconfig.AliossConfig.Endpoint,global.GloConfig.Sqlconfig.AliossConfig.AccessKeyID,global.GloConfig.Sqlconfig.AliossConfig.AccessKeySecret,bucketName)
+	bucket, err := GetExistBucket(global.GloConfig.Sqlconfig.AliossConfig.Endpoint,global.GloConfig.Sqlconfig.AliossConfig.interview/accessKeyID,global.GloConfig.Sqlconfig.AliossConfig.interview/accessKeySecret,bucketName)
 	if err != nil {
 		HandleError(err)
 	}
@@ -62,7 +62,7 @@ func PutObjectFromFileWithUrl(bucketName,objectKey,filePath string)bool  {
 	return true
 }
 func GetObjectToFileWithUrl(bucketName,objectKey,filePath string)  {
-	bucket, err := GetExistBucket(global.GloConfig.Sqlconfig.AliossConfig.Endpoint,global.GloConfig.Sqlconfig.AliossConfig.AccessKeyID,global.GloConfig.Sqlconfig.AliossConfig.AccessKeySecret,bucketName)
+	bucket, err := GetExistBucket(global.GloConfig.Sqlconfig.AliossConfig.Endpoint,global.GloConfig.Sqlconfig.AliossConfig.interview/accessKeyID,global.GloConfig.Sqlconfig.AliossConfig.interview/accessKeySecret,bucketName)
 	if err != nil {
 		HandleError(err)
 	}

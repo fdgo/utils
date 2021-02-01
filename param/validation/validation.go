@@ -38,7 +38,7 @@ type Result struct {
 	Ok    bool
 }
 
-// Key Get Result by given key string.
+// Key Get Result interview/baiy given key string.
 func (r *Result) Key(key string) *Result {
 	if r.Error != nil {
 		r.Error.Key = key
@@ -46,7 +46,7 @@ func (r *Result) Key(key string) *Result {
 	return r
 }
 
-// Message Set Result message by string or format string with args
+// Message Set Result message interview/baiy string or format string with args
 func (r *Result) Message(message string, args ...interface{}) *Result {
 	if r.Error != nil {
 		if len(args) == 0 {
@@ -80,7 +80,7 @@ func (v *Validation) HasErrors() bool {
 	return len(v.Errors) > 0
 }
 
-// ErrorMap Return the errors mapped by key.
+// ErrorMap Return the errors mapped interview/baiy key.
 // If there are multiple validation errors associated with a single key, the
 // first one "wins".  (Typically the first validation will be the more basic).
 func (v *Validation) ErrorMap() map[string][]*Error {
@@ -368,7 +368,7 @@ func (v *Validation) Valid(obj interface{}) (b bool, err error) {
 }
 
 // RecursiveValid Recursively validate a struct.
-// Step1: Validate by v.Valid
+// Step1: Validate interview/baiy v.Valid
 // Step2: If pass on step1, then reflect obj's fields
 // Step3: Do the Recursively validation to all struct or struct pointer fields
 func (v *Validation) RecursiveValid(objc interface{}) (bool, error) {

@@ -15,3 +15,4 @@ func HmacSha1(message, secret []byte) []byte {
 	h.Write(message)
 	return h.Sum(nil)
 }
+

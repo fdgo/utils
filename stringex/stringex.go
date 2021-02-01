@@ -1,28 +1,43 @@
 package stringex
 
 import (
-	"ds_server/support/utils/bytesex"
-	"fmt"
 	"bytes"
 	rd "crypto/rand"
-	"encoding/binary"
-	"encoding/json"
-	"math/rand"
 	"encoding/base64"
+	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
+	"github.com/speps/go-hashids"
+	"time"
+	"interview/baiy/support/utils/bytesex"
+	"interview/baiy/support/utils/sign/md5"
+	"math/rand"
 	"net"
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
+
 	"unicode"
 	"unicode/utf8"
 	"unsafe"
-	"github.com/holdno/snowFlakeByGo"
-	"ds_server/support/utils/sign/md5"
 )
+
+func Str2int(str string) int {
+	ret, _ := strconv.Atoi(str)
+	return ret
+}
+func Str2float64(str string) (error, float64) {
+	f, err := strconv.ParseFloat(str, 64)
+	return err, f
+}
+func Str2int64(str string) (error, int64) {
+	i, err := strconv.ParseInt(str, 10, 64)
+	return err, i
+}
+
 func SubString(s string, pos, length int) string {
 	runes := []rune(s)
 	l := pos + length
@@ -46,23 +61,46 @@ func StringToSliceByte(s string) []byte {
 func Base64(src []byte) string {
 	return base64.StdEncoding.EncodeToString(src)
 }
+func Rand12Numstring() string {
+	min := 100000000000
+	max := 999999999999
+	return strconv.Itoa(GetRandNum(min, max))
+}
+func Rand10Numstring() string {
+	min := 1000000000
+	max := 9999999999
+	return strconv.Itoa(GetRandNum(min, max))
+}
+func Rand4NumString() string {
+	min := 1000
+	max := 9999
+	return strconv.Itoa(GetRandNum(min, max))
+}
+func Rand6NumString() string {
+	min := 100000
+	max := 999999
+	return strconv.Itoa(GetRandNum(min, max))
+}
+func Rand1NumString() string {
+	min := 1
+	max := 9
+	return strconv.Itoa(GetRandNum(min, max))
+}
+func GenerUuid(nsize int) string {
+	a := GetRandNum(1, 1000)
+	b := GetRandNum(1, 1000)
+	c := GetRandNum(1, 1000)
+	d := GetRandNum(1, 1000)
+	salt := GetRandomString(16)
+	hd := hashids.NewData()
+	hd.Salt = salt
+	hd.MinLength = nsize
+	h, _ := hashids.NewWithData(hd)
+	uuid, _ := h.Encode([]int{a, b, c, d})
+	return uuid
+}
 
-func Rand8Numstring() string {
-	min:=10000000
-	max:=99999999
-	return strconv.Itoa(GetRandNum(min,max))
-}
-func Rand6NumString()string{
-	min:=100000
-	max:=999999
-	return strconv.Itoa(GetRandNum(min,max))
-}
-func Rand1NumString()string{
-	min:=1
-	max:=9
-	return strconv.Itoa(GetRandNum(min,max))
-}
-func  GetRandomString(nSize int) string {
+func GetRandomString(nSize int) string {
 	chars := "123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	bytes := []byte(chars)
 	value := []byte{}
@@ -74,74 +112,44 @@ func  GetRandomString(nSize int) string {
 }
 func GetRandNum(min, max int) int {
 	rand.Seed(time.Now().UnixNano())
-	return  min + int(rand.Int63n(int64(max)-int64(min)+1))
+	return min + int(rand.Int63n(int64(max)-int64(min)+1))
 }
 func GetRandAccntPwd() string {
-	str := GetRandomString(GetRandNum(7,21))
-	if str[0]=='0'||str[0]=='1'||str[0]=='2'||str[0]=='3'||str[0]=='4'||
-		str[0]=='5'||str[0]=='6'||str[0]=='7'||str[0]=='8'||str[0]=='9'{
-		str = str[1:len(str)]
+	str := GetRandomString(GetRandNum(7, 21))
+	if str[0] == '0' || str[0] == '1' || str[0] == '2' || str[0] == '3' || str[0] == '4' ||
+		str[0] == '5' || str[0] == '6' || str[0] == '7' || str[0] == '8' || str[0] == '9' {
+		str = str[1:]
 	}
-	str = str[0:len(str)-1]
+	str = str[0 : len(str)-1]
 	return str
 }
-var idWorker *snowFlakeByGo.Worker
-func GetUuid() int64 {
-	idWorker, _ = snowFlakeByGo.NewWorker(0)
-	return  idWorker.GetId()
+func StrJoin(tag string, str ...string) string {
+	slice := make([]string, 0)
+	slice = append(slice, str...)
+	return strings.Join(slice, tag)
 }
-func GetUuidStr() string {
-	return strconv.FormatInt(GetUuid(),10)
-}
-//example:
-//rs := rand6.RandSix{}
-//fmt.Println(rs.Rand6NumString())
 
-//package utils
-//
-//import (
-//"github.com/satori/go.uuid"
-//
-//"encoding/base64"
-//)
-//
-//// UUID 生成UUID，编码为URL安全的字符串。如果发生错误，panic
-//func UUID() string {
-//	uid := uuid.Must(uuid.NewV4())
-//
-//	data, err := uid.MarshalBinary()
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	return base64.RawURLEncoding.EncodeToString(data)
-//}
-
-
-func StrJoin(tag string, str...string )string  {
-	slice := make([]string,0)
-	slice = append(slice,str...)
-	return strings.Join(slice,tag)
-}
 //正向截取，得到全部
-func StrSplit(tag string, str string)(int,[]string)  {
-	slice := make([]string,0)
-	stringArr := strings.Split(str,tag)
-	for _,v := range stringArr{
-		slice = append(slice,v)
+func StrSplit(tag string, str string) (int, []string) {
+	slice := make([]string, 0)
+	stringArr := strings.Split(str, tag)
+	for _, v := range stringArr {
+		slice = append(slice, v)
 	}
-	return len(slice),slice
+	return len(slice), slice
 }
+
 //反向截取一次
-func StrRevSplit(tag string, str string) (string,string)  {
-	index := strings.LastIndex(str,tag)
-	if index == -1{
-		return "NULL","NULL"
+func StrRevSplit(tag string, str string) (string, string) {
+	index := strings.LastIndex(str, tag)
+	if index == -1 {
+		return "NULL", "NULL"
 	}
 	front := str[:index]
 	back := str[index+1:]
-	return front,back
+	return front, back
 }
+
 //截取某一段
 func StrSub(str string, pos, length int) string {
 	runes := []rune(str)
@@ -151,6 +159,7 @@ func StrSub(str string, pos, length int) string {
 	}
 	return string(runes[pos:l])
 }
+
 //字符串逆序输出
 func StrRev(s string) string {
 	str := []rune(s)
@@ -159,6 +168,7 @@ func StrRev(s string) string {
 	}
 	return string(str)
 }
+
 //删除空格、换行、空格等字符
 func StrStrim(s string) string {
 	s = strings.Replace(s, "\t", "", -1)
@@ -233,8 +243,9 @@ func GetGuid() string {
 	if _, err := io.ReadFull(rd.Reader, b); err != nil {
 		return ""
 	}
-	return  md5.Md5(Base64(b))
+	return md5.Md5(Base64(b))
 }
+
 //把IP地址转成数字
 func GetIPNums(s string) (ipNum uint32, err error) {
 	if strings.EqualFold(s, "") {

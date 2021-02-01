@@ -3,6 +3,7 @@ package errex
 import (
 	"errors"
 )
+
 //--------------------------------------------------------
 const (
 	S_EMPTY_CODE = "Empty code."

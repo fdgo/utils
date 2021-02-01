@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"io/ioutil"
 )
+
 func BytesToInt32(b []byte, start int) int {
 	return int(b[start]<<24 + b[start+1]<<16 + b[start+2]<<8 + b[start+3])
 }

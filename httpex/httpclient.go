@@ -2,15 +2,19 @@ package httpex
 
 import (
 	"bytes"
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"interview/baiy/support/utils/constex"
 	"mime/multipart"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -23,7 +27,7 @@ func init() {
 		Transport: &http.Transport{
 			IdleConnTimeout: 3 * time.Minute,
 			//MaxConnsPerHost: 10000,
-			TLSHandshakeTimeout:   10 * time.Second,
+			TLSHandshakeTimeout: 10 * time.Second,
 			DialContext: (&net.Dialer{
 				Timeout:   30 * time.Second,
 				KeepAlive: 10 * time.Minute,
@@ -60,7 +64,7 @@ func GetByToken(requestUrl, token string) (int, string, error) {
 	if err != nil {
 		return 0, "", err
 	}
-	reqest.Header.Set("Authorization", "Bearer "+token)
+	reqest.Header.Set("Authorization", token)
 	response, err := client.Do(reqest)
 	if err != nil {
 		return 0, "", err
@@ -76,10 +80,34 @@ func GetByToken(requestUrl, token string) (int, string, error) {
 	return response.StatusCode, string(body), nil
 }
 
+func GetByTokenHead(requestUrl, token string, city string, lat, lgt string) (int, string, error) {
+	reqest, err := http.NewRequest("GET", requestUrl, nil)
+	if err != nil {
+		return 0, "", err
+	}
+	reqest.Header.Set("Authorization", token)
+	reqest.Header.Set("city", city)
+	reqest.Header.Set("lat", lat)
+	reqest.Header.Set("lgt", lgt)
+	response, err := client.Do(reqest)
+	if err != nil {
+		return 0, "", err
+	}
+	defer response.Body.Close()
+	if err != nil {
+		return 0, "", err
+	}
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return response.StatusCode, "", err
+	}
+	return response.StatusCode, string(body), nil
+}
 
 type StringBuilder struct {
 	buf bytes.Buffer
 }
+
 func NewStringBuilder() *StringBuilder {
 	return &StringBuilder{buf: bytes.Buffer{}}
 }
@@ -91,6 +119,7 @@ func (this *StringBuilder) Append(obj interface{}) *StringBuilder {
 func (this *StringBuilder) ToString() string {
 	return this.buf.String()
 }
+
 //获取url和参数列表对应的完整请求url
 func BuildRequestUrl(requestUrl string, params url.Values) string {
 	if len(params) <= 0 {
@@ -116,14 +145,104 @@ func BuildRequestUrl(requestUrl string, params url.Values) string {
 	return data.ToString()
 }
 
-//获取url对应的内容，返回信息：StatusCode，body，err
-func Post(requestUrl string, params url.Values) (int, string, error) {
-	reqest, err := http.NewRequest("POST", requestUrl, strings.NewReader(params.Encode()))
+func TimeStrToTimeStamp() (nTimeStamp int64) {
+	now := time.Now()
+	year, mon, day := now.UTC().Date()
+	hour, min, sec := now.UTC().Clock()
+	utc := fmt.Sprintf("%04d-%02d-%02d %02d:%02d:%02d", year, mon, day, hour, min, sec)
+	timestamp, _ := time.Parse("2006-01-02 15:04:05", utc)
+	return timestamp.Unix() //- 3600*8
+}
+func Sha1(message []byte) []byte {
+	h := sha1.New()
+	h.Write(message)
+	return h.Sum(nil)
+}
+func RemarkImUser(requestUrl string, jsonString string) (int, string, error) {
+	cutime := strconv.FormatInt(TimeStrToTimeStamp(), 10)
+	req := bytes.NewBuffer([]byte(jsonString))
+	reqest, err := http.NewRequest("POST", requestUrl, req)
 	if err != nil {
 		return 0, "", err
 	}
 	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
-	reqest.Header.Set("User-Agent", "ha666")
+	reqest.Header.Set("AppKey", constex.IM_APPKEY)
+	reqest.Header.Set("Nonce", constex.IM_NONCE)
+	reqest.Header.Set("CurTime", cutime)
+	reqest.Header.Set("CheckSum", hex.EncodeToString(Sha1([]byte(constex.IM_APPSECRET+constex.IM_NONCE+cutime))))
+
+	response, err := client.Do(reqest)
+	if err != nil {
+		return 0, "", err
+	}
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return response.StatusCode, "", err
+	}
+	return response.StatusCode, string(body), nil
+}
+func AddFriendImUser(requestUrl string, jsonString string) (int, string, error) {
+	cutime := strconv.FormatInt(TimeStrToTimeStamp(), 10)
+	req := bytes.NewBuffer([]byte(jsonString))
+	reqest, err := http.NewRequest("POST", requestUrl, req)
+	if err != nil {
+		return 0, "", err
+	}
+	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+	reqest.Header.Set("AppKey", constex.IM_APPKEY)
+	reqest.Header.Set("Nonce", constex.IM_NONCE)
+	reqest.Header.Set("CurTime", cutime)
+	reqest.Header.Set("CheckSum", hex.EncodeToString(Sha1([]byte(constex.IM_APPSECRET+constex.IM_NONCE+cutime))))
+
+	response, err := client.Do(reqest)
+	if err != nil {
+		return 0, "", err
+	}
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return response.StatusCode, "", err
+	}
+	return response.StatusCode, string(body), nil
+}
+func UpdateImUserInfo(requestUrl string, jsonString string) (int, string, error) {
+	cutime := strconv.FormatInt(TimeStrToTimeStamp(), 10)
+	req := bytes.NewBuffer([]byte(jsonString))
+	reqest, err := http.NewRequest("POST", requestUrl, req)
+	if err != nil {
+		return 0, "", err
+	}
+	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+	reqest.Header.Set("AppKey", constex.IM_APPKEY)
+	reqest.Header.Set("Nonce", constex.IM_NONCE)
+	reqest.Header.Set("CurTime", cutime)
+	reqest.Header.Set("CheckSum", hex.EncodeToString(Sha1([]byte(constex.IM_APPSECRET+constex.IM_NONCE+cutime))))
+
+	response, err := client.Do(reqest)
+	if err != nil {
+		return 0, "", err
+	}
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return response.StatusCode, "", err
+	}
+	return response.StatusCode, string(body), nil
+}
+func GetImUserInfo(requestUrl string, jsonString string) (int, string, error) {
+	cutime := strconv.FormatInt(TimeStrToTimeStamp(), 10)
+	req := bytes.NewBuffer([]byte(jsonString))
+	reqest, err := http.NewRequest("POST", requestUrl, req)
+	if err != nil {
+		return 0, "", err
+	}
+	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+	reqest.Header.Set("AppKey", constex.IM_APPKEY)
+	reqest.Header.Set("Nonce", constex.IM_NONCE)
+	reqest.Header.Set("CurTime", cutime)
+	reqest.Header.Set("CheckSum", hex.EncodeToString(Sha1([]byte(constex.IM_APPSECRET+constex.IM_NONCE+cutime))))
+
 	response, err := client.Do(reqest)
 	if err != nil {
 		return 0, "", err
@@ -136,15 +255,91 @@ func Post(requestUrl string, params url.Values) (int, string, error) {
 	return response.StatusCode, string(body), nil
 }
 
+func SetBlack(requestUrl string, jsonString string) (int, string, error) {
+	cutime := strconv.FormatInt(TimeStrToTimeStamp(), 10)
+	req := bytes.NewBuffer([]byte(jsonString))
+	reqest, err := http.NewRequest("POST", requestUrl, req)
+	if err != nil {
+		return 0, "", err
+	}
+	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+	reqest.Header.Set("AppKey", constex.IM_APPKEY)
+	reqest.Header.Set("Nonce", constex.IM_NONCE)
+	reqest.Header.Set("CurTime", cutime)
+	reqest.Header.Set("CheckSum", hex.EncodeToString(Sha1([]byte(constex.IM_APPSECRET+constex.IM_NONCE+cutime))))
+
+	response, err := client.Do(reqest)
+	if err != nil {
+		return 0, "", err
+	}
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return response.StatusCode, "", err
+	}
+	return response.StatusCode, string(body), nil
+}
+
+//获取url对应的内容，返回信息：StatusCode，body，err
+func GenImConPwd(requestUrl string, jsonString string) (int, string, error) {
+	cutime := strconv.FormatInt(TimeStrToTimeStamp(), 10)
+	req := bytes.NewBuffer([]byte(jsonString))
+	reqest, err := http.NewRequest("POST", requestUrl, req)
+	if err != nil {
+		return 0, "", err
+	}
+	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+	reqest.Header.Set("AppKey", constex.IM_APPKEY)
+	reqest.Header.Set("Nonce", constex.IM_NONCE)
+	reqest.Header.Set("CurTime", cutime)
+	reqest.Header.Set("CheckSum", hex.EncodeToString(Sha1([]byte(constex.IM_APPSECRET+constex.IM_NONCE+cutime))))
+
+	response, err := client.Do(reqest)
+	if err != nil {
+		return 0, "", err
+	}
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return response.StatusCode, "", err
+	}
+	return response.StatusCode, string(body), nil
+}
+func SetMessage(requestUrl string, jsonString string) (int, string, error)  {
+	cutime := strconv.FormatInt(TimeStrToTimeStamp(), 10)
+	req := bytes.NewBuffer([]byte(jsonString))
+	reqest, err := http.NewRequest("POST", requestUrl, req)
+	if err != nil {
+		return 0, "", err
+	}
+	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+	reqest.Header.Set("AppKey", constex.IM_APPKEY)
+	reqest.Header.Set("Nonce", constex.IM_NONCE)
+	reqest.Header.Set("CurTime", cutime)
+	reqest.Header.Set("CheckSum", hex.EncodeToString(Sha1([]byte(constex.IM_APPSECRET+constex.IM_NONCE+cutime))))
+
+	response, err := client.Do(reqest)
+	if err != nil {
+		return 0, "", err
+	}
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return response.StatusCode, "", err
+	}
+	return response.StatusCode, string(body), nil
+}
 func ToJson(data interface{}) string {
 	b, _ := json.Marshal(data)
 	return string(b)
 }
+
 //用Post方法获取url对应的内容，提交json，返回信息：StatusCode，body，err
 func PostJson(requestUrl string, params map[string]string) (int, string, error) {
 	req := bytes.NewBuffer([]byte(ToJson(params)))
 	reqest, err := http.NewRequest("POST", requestUrl, req)
 	if err != nil {
+		fmt.Println(err, "**********")
 		return 0, "", err
 	}
 	reqest.Header.Set("Content-Type", "application/json")
@@ -167,7 +362,7 @@ func PostJsonByToken(requestUrl, token, jsonString string) (int, string, error) 
 	if err != nil {
 		return 0, "", err
 	}
-	reqest.Header.Set("Authorization", "Bearer "+token)
+	reqest.Header.Set("Authorization", token)
 	reqest.Header.Set("Content-Type", "application/json")
 	response, err := client.Do(reqest)
 	if err != nil {
@@ -246,4 +441,3 @@ func PostFile(requestUrl string, params url.Values, field_name, path string) (in
 	}
 	return resp.StatusCode, string(resp_body), nil
 }
-
